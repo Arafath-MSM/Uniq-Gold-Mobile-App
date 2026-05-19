@@ -7,6 +7,7 @@ class WooProduct {
     required this.currencyMinorUnit,
     required this.imageUrl,
     required this.description,
+    required this.categorySlugs,
   });
 
   final int id;
@@ -16,4 +17,5 @@ class WooProduct {
   final int currencyMinorUnit;
   final String imageUrl;
   final String description;
+  final List<String> categorySlugs;
 }

@@ -7,6 +7,7 @@ class WooProductModel {
     required this.currencyMinorUnit,
     required this.imageUrl,
     required this.description,
+    required this.categorySlugs,
   });
 
   final int id;
@@ -16,11 +17,14 @@ class WooProductModel {
   final int currencyMinorUnit;
   final String imageUrl;
   final String description;
+  final List<String> categorySlugs;
 
   factory WooProductModel.fromJson(Map<String, dynamic> json) {
     final List<dynamic> images = (json['images'] as List<dynamic>? ?? <dynamic>[]);
     final Map<String, dynamic>? firstImage =
         images.isNotEmpty ? images.first as Map<String, dynamic> : null;
+    final List<dynamic> categories =
+        (json['categories'] as List<dynamic>? ?? <dynamic>[]);
 
     return WooProductModel(
       id: json['id'] as int? ?? 0,
@@ -31,6 +35,10 @@ class WooProductModel {
       imageUrl: firstImage?['src'] as String? ?? '',
       description:
           (json['short_description'] as String? ?? json['description'] as String? ?? ''),
+      categorySlugs: categories
+          .map((dynamic category) => ((category as Map<String, dynamic>)['slug'] ?? '').toString())
+          .where((String slug) => slug.isNotEmpty)
+          .toList(),
     );
   }
 }

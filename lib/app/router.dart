@@ -6,7 +6,9 @@ import '../features/catalog/presentation/pages/catalog_page.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/product/presentation/pages/product_details_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
+import '../features/search/presentation/pages/search_page.dart';
 import '../features/splash/presentation/pages/splash_page.dart';
+import '../features/wishlist/presentation/pages/wishlist_page.dart';
 import '../shared/widgets/app_bottom_nav_bar.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -35,7 +37,9 @@ final GoRouter appRouter = GoRouter(
           path: '/catalog',
           name: 'catalog',
           builder: (BuildContext context, GoRouterState state) {
-            return const CatalogPage();
+            return CatalogPage(
+              initialCategorySlug: state.uri.queryParameters['category'],
+            );
           },
         ),
         GoRoute(
@@ -50,6 +54,20 @@ final GoRouter appRouter = GoRouter(
           name: 'profile',
           builder: (BuildContext context, GoRouterState state) {
             return const ProfilePage();
+          },
+        ),
+        GoRoute(
+          path: '/search',
+          name: 'search',
+          builder: (BuildContext context, GoRouterState state) {
+            return const SearchPage();
+          },
+        ),
+        GoRoute(
+          path: '/wishlist',
+          name: 'wishlist',
+          builder: (BuildContext context, GoRouterState state) {
+            return const WishlistPage();
           },
         ),
       ],

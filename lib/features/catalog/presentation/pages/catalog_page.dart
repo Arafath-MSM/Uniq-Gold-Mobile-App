@@ -9,12 +9,18 @@ import '../../../../shared/widgets/network_image_view.dart';
 import '../controllers/catalog_controller.dart';
 
 class CatalogPage extends ConsumerWidget {
-  const CatalogPage({super.key});
+  const CatalogPage({
+    super.key,
+    this.initialCategorySlug,
+  });
+
+  final String? initialCategorySlug;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(catalogCategoriesProvider);
     final productsAsync = ref.watch(catalogProductsProvider);
+    final String? selectedCategorySlug = initialCategorySlug?.trim().toLowerCase();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Catalog')),
@@ -40,15 +46,27 @@ class CatalogPage extends ConsumerWidget {
           const SizedBox(height: 12),
           categoriesAsync.when(
             data: (categories) {
+              final filteredCategories = categories.where((category) {
+                if (selectedCategorySlug == null || selectedCategorySlug.isEmpty) {
+                  return true;
+                }
+                return category.slug.toLowerCase() == selectedCategorySlug;
+              }).toList();
+
               return SizedBox(
                 height: 52,
                 child: ListView.separated(
                   scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
+                  itemCount: filteredCategories.length,
                   separatorBuilder: (_, __) => const SizedBox(width: 8),
                   itemBuilder: (BuildContext context, int index) {
-                    final category = categories[index];
-                    return Chip(label: Text(category.name));
+                    final category = filteredCategories[index];
+                    return Chip(
+                      backgroundColor: selectedCategorySlug != null
+                          ? const Color(0xFFFFF1BF)
+                          : null,
+                      label: Text(category.name),
+                    );
                   },
                 ),
               );
@@ -64,8 +82,17 @@ class CatalogPage extends ConsumerWidget {
           const SizedBox(height: 12),
           productsAsync.when(
             data: (products) {
+              final filteredProducts = products.where((product) {
+                if (selectedCategorySlug == null || selectedCategorySlug.isEmpty) {
+                  return true;
+                }
+                return product.categorySlugs
+                    .map((slug) => slug.toLowerCase())
+                    .contains(selectedCategorySlug);
+              }).toList();
+
               return Column(
-                children: products.map((product) {
+                children: filteredProducts.map((product) {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: InkWell(
