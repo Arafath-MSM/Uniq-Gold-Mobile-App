@@ -16,6 +16,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
           (category) => WooCategory(
             id: category.id,
             name: category.name,
+            slug: category.slug,
             imageUrl: category.imageUrl,
           ),
         )
@@ -35,6 +36,7 @@ class CatalogRepositoryImpl implements CatalogRepository {
             currencyMinorUnit: product.currencyMinorUnit,
             imageUrl: product.imageUrl,
             description: product.description,
+            categorySlugs: product.categorySlugs,
           ),
         )
         .toList();
@@ -51,6 +53,26 @@ class CatalogRepositoryImpl implements CatalogRepository {
       currencyMinorUnit: product.currencyMinorUnit,
       imageUrl: product.imageUrl,
       description: product.description,
+      categorySlugs: product.categorySlugs,
     );
+  }
+
+  @override
+  Future<List<WooProduct>> searchProducts(String query) async {
+    final products = await _remoteDataSource.searchProducts(query);
+    return products
+        .map(
+          (product) => WooProduct(
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            currencyCode: product.currencyCode,
+            currencyMinorUnit: product.currencyMinorUnit,
+            imageUrl: product.imageUrl,
+            description: product.description,
+            categorySlugs: product.categorySlugs,
+          ),
+        )
+        .toList();
   }
 }

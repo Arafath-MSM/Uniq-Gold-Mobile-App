@@ -31,6 +31,7 @@ class AppBottomNavScaffold extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: NavigationBar(
+        height: 72,
         selectedIndex: _currentIndex(context),
         onDestinationSelected: (int index) => _onTap(context, index),
         destinations: const <Widget>[

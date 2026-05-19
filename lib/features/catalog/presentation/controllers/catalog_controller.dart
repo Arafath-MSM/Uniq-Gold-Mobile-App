@@ -18,3 +18,8 @@ final productDetailsProvider =
     FutureProvider.family<WooProduct, String>((Ref ref, String productId) {
   return ref.read(catalogRepositoryProvider).getProductById(productId);
 });
+
+final searchProductsProvider =
+    FutureProvider.family<List<WooProduct>, String>((Ref ref, String query) {
+  return ref.read(catalogRepositoryProvider).searchProducts(query);
+});

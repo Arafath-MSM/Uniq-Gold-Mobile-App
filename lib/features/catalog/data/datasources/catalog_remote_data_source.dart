@@ -10,7 +10,14 @@ class CatalogRemoteDataSource {
 
   Future<List<WooProductModel>> getProducts() async {
     try {
-      final response = await _apiClient.dio.get<dynamic>(Endpoints.storeProducts);
+      final response = await _apiClient.dio.get<dynamic>(
+        Endpoints.storeProducts,
+        queryParameters: <String, dynamic>{
+          'orderby': 'date',
+          'order': 'desc',
+          'per_page': 20,
+        },
+      );
       final List<dynamic> data = response.data as List<dynamic>? ?? <dynamic>[];
       return data
           .map((dynamic item) => WooProductModel.fromJson(item as Map<String, dynamic>))
@@ -25,6 +32,7 @@ class CatalogRemoteDataSource {
           currencyMinorUnit: 2,
           imageUrl: '',
           description: 'Elegant necklace placeholder from WooCommerce catalog.',
+          categorySlugs: const <String>['necklaces'],
         ),
         WooProductModel(
           id: 2,
@@ -34,6 +42,7 @@ class CatalogRemoteDataSource {
           currencyMinorUnit: 2,
           imageUrl: '',
           description: 'Starter mock item while API is not connected yet.',
+          categorySlugs: const <String>['bracelets'],
         ),
       ];
     }
@@ -53,7 +62,37 @@ class CatalogRemoteDataSource {
         currencyMinorUnit: 2,
         imageUrl: '',
         description: 'Live product details will appear here once the WooCommerce API responds.',
+        categorySlugs: const <String>[],
       );
+    }
+  }
+
+  Future<List<WooProductModel>> searchProducts(String query) async {
+    final String normalized = query.trim();
+    if (normalized.isEmpty) {
+      return <WooProductModel>[];
+    }
+
+    try {
+      final response = await _apiClient.dio.get<dynamic>(
+        Endpoints.storeProducts,
+        queryParameters: <String, dynamic>{
+          'search': normalized,
+          'orderby': 'date',
+          'order': 'desc',
+          'per_page': 12,
+        },
+      );
+      final List<dynamic> data = response.data as List<dynamic>? ?? <dynamic>[];
+      return data
+          .map((dynamic item) => WooProductModel.fromJson(item as Map<String, dynamic>))
+          .toList();
+    } catch (_) {
+      final products = await getProducts();
+      final lower = normalized.toLowerCase();
+      return products.where((WooProductModel product) {
+        return product.name.toLowerCase().contains(lower);
+      }).toList();
     }
   }
 
@@ -67,9 +106,10 @@ class CatalogRemoteDataSource {
           .toList();
     } catch (_) {
       return <WooCategoryModel>[
-        WooCategoryModel(id: 1, name: 'Necklaces', imageUrl: ''),
-        WooCategoryModel(id: 2, name: 'Rings', imageUrl: ''),
-        WooCategoryModel(id: 3, name: 'Bangles', imageUrl: ''),
+        WooCategoryModel(id: 1, name: 'Necklaces', slug: 'necklaces', imageUrl: ''),
+        WooCategoryModel(id: 2, name: 'Rings', slug: 'rings', imageUrl: ''),
+        WooCategoryModel(id: 3, name: 'Bracelets', slug: 'braclets', imageUrl: ''),
+        WooCategoryModel(id: 4, name: 'Earrings', slug: 'earrings', imageUrl: ''),
       ];
     }
   }

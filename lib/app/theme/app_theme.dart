@@ -16,7 +16,18 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         centerTitle: true,
         elevation: 0,
+        backgroundColor: Colors.white,
+        foregroundColor: AppColors.textPrimary,
       ),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: Colors.white,
+        indicatorColor: AppColors.softPanel,
+        labelTextStyle: WidgetStateProperty.all(
+          const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+        ),
+      ),
+      cardColor: Colors.white,
+      dividerColor: AppColors.line,
       useMaterial3: true,
     );
   }
